@@ -94,8 +94,11 @@ if __name__ == '__main__':
 
     FLAGS.triton_version = None
     with open('TRITON_VERSION', "r") as vfile:
-        FLAGS.triton_version = vfile.readline().strip()
-
+        if os.getenv("CI_PIPELINE_ID") :
+            FLAGS.triton_version = vfile.readline().strip() + "." + os.getenv("CI_PIPELINE_ID").strip()
+        else:
+            FLAGS.triton_version = vfile.readline().strip()
+            
     FLAGS.whl_dir = os.path.join(FLAGS.dest_dir, 'wheel')
 
     print("=== Building in: {}".format(os.getcwd()))
