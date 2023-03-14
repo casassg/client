@@ -94,7 +94,7 @@ if __name__ == '__main__':
 
     FLAGS.triton_version = None
     with open('TRITON_VERSION', "r") as vfile:
-        if os.getenv("CI_PIPELINE_ID") :
+        if os.getenv("NVIDIA_BUILD_ID") :
             FLAGS.triton_version = vfile.readline().strip() + "." + os.getenv("NVIDIA_BUILD_ID").strip()
         else:
             FLAGS.triton_version = vfile.readline().strip()
