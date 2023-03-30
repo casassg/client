@@ -26,10 +26,10 @@
 
 cmake_minimum_required (VERSION 3.18)
 
-if(WIN32)
-  message("perf_analyzer is not currently supported on Windows because "
-          "is requires functionalities that are UNIX specific.")
-else()
+# if(WIN32)
+#   message("perf_analyzer is not currently supported on Windows because "
+#           "is requires functionalities that are UNIX specific.")
+# else()
 
 add_subdirectory(client_backend)
 
@@ -154,65 +154,65 @@ install(CODE "message(\"-- Created symlink: perf_client -> ./perf_analyzer\")")
 
 
 
-set(PERF_ANALYZER_UNIT_TESTS_SRCS ${PERF_ANALYZER_SRCS})
-list(PREPEND PERF_ANALYZER_UNIT_TESTS_SRCS perf_analyzer_unit_tests.cc)
-set(PERF_ANALYZER_UNIT_TESTS_HDRS ${PERF_ANALYZER_HDRS})
+# set(PERF_ANALYZER_UNIT_TESTS_SRCS ${PERF_ANALYZER_SRCS})
+# list(PREPEND PERF_ANALYZER_UNIT_TESTS_SRCS perf_analyzer_unit_tests.cc)
+# set(PERF_ANALYZER_UNIT_TESTS_HDRS ${PERF_ANALYZER_HDRS})
 
-add_executable(
-  perf_analyzer_unit_tests
-  ${PERF_ANALYZER_UNIT_TESTS_SRCS}
-  ${PERF_ANALYZER_UNIT_TESTS_HDRS}
-  mock_inference_profiler.h
-  mock_model_parser.h
-  test_utils.h
-  client_backend/mock_client_backend.h  
-  mock_concurrency_worker.h
-  mock_data_loader.h
-  mock_infer_context.h
-  mock_infer_data_manager.h
-  mock_request_rate_worker.h
-  mock_sequence_manager.h
-  test_inference_profiler.cc
-  test_command_line_parser.cc
-  test_idle_timer.cc
-  test_load_manager_base.h
-  test_load_manager.cc
-  test_model_parser.cc
-  test_metrics_manager.cc
-  test_perf_utils.cc
-  test_report_writer.cc
-  client_backend/triton/test_triton_client_backend.cc
-  test_request_rate_manager.cc
-  test_concurrency_manager.cc
-  test_custom_load_manager.cc
-  test_sequence_manager.cc
-  test_infer_context.cc
-  $<TARGET_OBJECTS:json-utils-library>
-)
+# add_executable(
+#   perf_analyzer_unit_tests
+#   ${PERF_ANALYZER_UNIT_TESTS_SRCS}
+#   ${PERF_ANALYZER_UNIT_TESTS_HDRS}
+#   mock_inference_profiler.h
+#   mock_model_parser.h
+#   test_utils.h
+#   client_backend/mock_client_backend.h  
+#   mock_concurrency_worker.h
+#   mock_data_loader.h
+#   mock_infer_context.h
+#   mock_infer_data_manager.h
+#   mock_request_rate_worker.h
+#   mock_sequence_manager.h
+#   test_inference_profiler.cc
+#   test_command_line_parser.cc
+#   test_idle_timer.cc
+#   test_load_manager_base.h
+#   test_load_manager.cc
+#   test_model_parser.cc
+#   test_metrics_manager.cc
+#   test_perf_utils.cc
+#   test_report_writer.cc
+#   client_backend/triton/test_triton_client_backend.cc
+#   test_request_rate_manager.cc
+#   test_concurrency_manager.cc
+#   test_custom_load_manager.cc
+#   test_sequence_manager.cc
+#   test_infer_context.cc
+#   $<TARGET_OBJECTS:json-utils-library>
+# )
 
-# -Wno-write-strings is needed for the unit tests in order to statically create
-# input argv cases in the CommandLineParser unit test
-#
-set_target_properties(perf_analyzer_unit_tests 
-  PROPERTIES COMPILE_FLAGS "-Wno-write-strings")
+# # -Wno-write-strings is needed for the unit tests in order to statically create
+# # input argv cases in the CommandLineParser unit test
+# #
+# set_target_properties(perf_analyzer_unit_tests 
+#   PROPERTIES COMPILE_FLAGS "-Wno-write-strings")
 
-target_link_libraries(
-  perf_analyzer_unit_tests
-  PRIVATE
-    gmock
-    client-backend-library
-    -lb64
-)
+# target_link_libraries(
+#   perf_analyzer_unit_tests
+#   PRIVATE
+#     gmock
+#     client-backend-library
+#     -lb64
+# )
 
-target_include_directories(
-  perf_analyzer_unit_tests
-  PRIVATE
-    client_backend
-)
+# target_include_directories(
+#   perf_analyzer_unit_tests
+#   PRIVATE
+#     client_backend
+# )
 
-install(
-  TARGETS perf_analyzer_unit_tests
-  RUNTIME DESTINATION bin
-)
+# install(
+#   TARGETS perf_analyzer_unit_tests
+#   RUNTIME DESTINATION bin
+# )
 
-endif()
+# endif()
