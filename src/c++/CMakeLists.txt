@@ -164,27 +164,42 @@ ExternalProject_Add(curl
   PATCH_COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/tools/install_src.py --src <SOURCE_DIR> ${INSTALL_SRC_DEST_ARG}
 )
 find_package(CURL REQUIRED)
+ExternalProject_Add(protobuf
 
-ExternalProject_Add(grpc
-  PREFIX grpc
+  GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
+  GIT_TAG        v22.2
+  SOURCE_SUBDIR  cmake
+  FIND_PACKAGE_ARGS NAMES protobuf
+  CMAKE_CACHE_ARGS
+  -DCMAKE_INSTALL_PREFIX:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/protobuf
+)
+# find_package(protobuf REQUIRED)
+# ExternalProject_Add(grpc
+#   PREFIX grpc
+#   GIT_REPOSITORY "https://github.com/grpc/grpc.git"
+#   GIT_TAG "v1.48.0"
+#   SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/grpc-repo/src/grpc"
+#   EXCLUDE_FROM_ALL ON
+#   CONFIGURE_COMMAND ""
+#   BUILD_COMMAND ""
+#   INSTALL_COMMAND ""
+#   TEST_COMMAND ""
+#   PATCH_COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/tools/install_src.py --src <SOURCE_DIR> ${INSTALL_SRC_DEST_ARG} --dest-basename=grpc_1.48.0
+#   CMAKE_CACHE_ARGS
+#   -DCMAKE_INSTALL_PREFIX:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/grpc
+# )
+# message(STATUS "Using gRPC ${gRPC_VERSION}")
+include(FetchContent)
+FetchContent_Declare(grpc
   GIT_REPOSITORY "https://github.com/grpc/grpc.git"
   GIT_TAG "v1.48.0"
-  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/grpc-repo/src/grpc"
-  EXCLUDE_FROM_ALL ON
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
-  INSTALL_COMMAND ""
-  TEST_COMMAND ""
-  PATCH_COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/tools/install_src.py --src <SOURCE_DIR> ${INSTALL_SRC_DEST_ARG} --dest-basename=grpc_1.48.0
-  CMAKE_CACHE_ARGS
-  -DCMAKE_INSTALL_PREFIX:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/grpc
 )
-message(STATUS "Using gRPC ${gRPC_VERSION}")
-include_directories($<TARGET_PROPERTY:gRPC::grpc,INTERFACE_INCLUDE_DIRECTORIES>)
+FetchContent_Populate(grpc)
+# include_directories($<TARGET_PROPERTY:gRPC::grpc,INTERFACE_INCLUDE_DIRECTORIES>)
 
 
 
-include(FetchContent)
+
 set(TRITON_COMMON_REPO_TAG "main" CACHE STRING "Repos branch")
 FetchContent_Declare(common
   GIT_REPOSITORY https://github.com/triton-inference-server/common.git
@@ -202,6 +217,9 @@ FetchContent_Declare(client
   GIT_SHALLOW ON 
 )
 FetchContent_Populate(client)
+
+
+
 
 
 find_package(RapidJSON CONFIG REQUIRED)
@@ -223,6 +241,9 @@ add_library(shm-utils-library
 
 include_directories(
   ${client_SOURCE_DIR}/src/c++/library
+  ${grpc_SOURCE_DIR}/include
+  ${protobuf_SOURCE_DIR}/third_party/abseil-cpp
+  ${common_SOURCE_DIR}
 )
 
 
