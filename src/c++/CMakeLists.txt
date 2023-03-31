@@ -137,5 +137,90 @@ cmake_minimum_required(VERSION 3.17)
 # endif() # TRITON_ENABLE_CC_HTTP OR TRITON_ENABLE_CC_GRPC
 
 # if(TRITON_ENABLE_PERF_ANALYZER)
-  add_subdirectory(perf_analyzer)
+  # add_subdirectory(perf_analyzer)
 # endif() # TRITON_ENABLE_PERF_ANALYZER
+
+set(TRITON_THIRD_PARTY_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third-party)
+
+include(ExternalProject)
+ExternalProject_Add(curl
+  PREFIX curl
+  GIT_REPOSITORY "https://github.com/curl/curl.git"
+  GIT_TAG "curl-7_86_0"
+  SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/curl/src/curl"
+  EXCLUDE_FROM_ALL ON
+  CMAKE_CACHE_ARGS
+    ${_CMAKE_ARGS_CMAKE_TOOLCHAIN_FILE}
+    ${_CMAKE_ARGS_VCPKG_TARGET_TRIPLET}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+    -DBUILD_TESTING:BOOL=OFF
+    -DBUILD_CURL_EXE:BOOL=OFF
+    -DBUILD_SHARED_LIBS:BOOL=OFF
+    -DCURL_STATICLIB:BOOL=ON
+    -DHTTP_ONLY:BOOL=ON
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_INSTALL_PREFIX:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/curl
+    ${LIBCURL_EXTRA_BUILD_ARGS}
+  PATCH_COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/tools/install_src.py --src <SOURCE_DIR> ${INSTALL_SRC_DEST_ARG}
+)
+find_package(CURL REQUIRED)
+
+ExternalProject_Add(grpc
+  GIT_REPOSITORY https://github.com/grpc/grpc.git
+  GIT_TAG v1.52.1
+  GIT_SHALLOW ON 
+  # SOURCE_DIR ${CMAKE_BINARY_DIR}/grcp-src
+  # BINARY_DIR ${CMAKE_BINARY_DIR}/grcp-build
+  FIND_PACKAGE_ARGS NAMES grpc
+  CMAKE_CACHE_ARGS
+  -DCMAKE_INSTALL_PREFIX:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/grpc
+)
+message(STATUS "Using gRPC ${gRPC_VERSION}")
+include_directories($<TARGET_PROPERTY:gRPC::grpc,INTERFACE_INCLUDE_DIRECTORIES>)
+
+
+
+include(FetchContent)
+set(TRITON_COMMON_REPO_TAG "main" CACHE STRING "Repos branch")
+FetchContent_Declare(common
+  GIT_REPOSITORY https://github.com/triton-inference-server/common.git
+  GIT_TAG ${TRITON_COMMON_REPO_TAG}
+  GIT_SHALLOW ON 
+)
+FetchContent_Populate(common)
+
+
+
+set(TRITON_CLIENT_REPO_TAG "main" CACHE STRING "Repos branch")
+FetchContent_Declare(client
+  GIT_REPOSITORY https://github.com/triton-inference-server/client.git
+  GIT_TAG ${TRITON_CLIENT_REPO_TAG}
+  GIT_SHALLOW ON 
+)
+FetchContent_Populate(client)
+
+
+find_package(RapidJSON CONFIG REQUIRED)
+
+add_library(json-utils-library 
+  EXCLUDE_FROM_ALL OBJECT
+  ${client_SOURCE_DIR}/src/c++/library/json_utils.h 
+  ${client_SOURCE_DIR}/src/c++/library/json_utils.cc
+)
+target_include_directories(json-utils-library
+  PUBLIC 
+  ${RapidJSON_INCLUDE_DIRS}
+)
+add_library(shm-utils-library 
+  EXCLUDE_FROM_ALL OBJECT
+  ${client_SOURCE_DIR}/src/c++/library/shm_utils.h 
+  ${client_SOURCE_DIR}/src/c++/library/shm_utils.cc
+)
+include_directories(
+  ${client_SOURCE_DIR}/src/c++/library
+)
+
+
+
+
+add_subdirectory(perf_analyzer)
