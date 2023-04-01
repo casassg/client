@@ -33,19 +33,19 @@ cmake_minimum_required(VERSION 3.17)
 # #
 # option(TRITON_ENABLE_CC_HTTP "Build C++ HTTP client libraries" OFF)
 # option(TRITON_ENABLE_CC_GRPC "Build C++ GRPC client libraries" OFF)
-# option(TRITON_ENABLE_PERF_ANALYZER "Enable Performance Analyzer" OFF)
+option(TRITON_ENABLE_PERF_ANALYZER "Enable Performance Analyzer" ON)
 # option(TRITON_ENABLE_EXAMPLES "Include examples in build" OFF)
 # option(TRITON_ENABLE_TESTS "Include tests in build" OFF)
-# option(TRITON_ENABLE_GPU "Enable GPU support in libraries" OFF)
+option(TRITON_ENABLE_GPU "Enable GPU support in libraries" OFF)
 # option(TRITON_USE_THIRD_PARTY "Use local version of third party libraries" ON)
 # option(TRITON_KEEP_TYPEINFO "Keep typeinfo symbols by disabling ldscript" OFF)
 
 # set(TRITON_COMMON_REPO_TAG "main" CACHE STRING "Tag for triton-inference-server/common repo")
 # set(TRITON_CORE_REPO_TAG "main" CACHE STRING "Tag for triton-inference-server/core repo")
 
-# if(NOT CMAKE_BUILD_TYPE)
-#   set(CMAKE_BUILD_TYPE Release)
-# endif()
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
 
 # #
 # # Dependencies
@@ -91,9 +91,9 @@ cmake_minimum_required(VERSION 3.17)
 # #
 # # CUDA
 # #
-# if(TRITON_ENABLE_GPU)
-#   find_package(CUDAToolkit REQUIRED)
-# endif() # TRITON_ENABLE_GPU
+if(TRITON_ENABLE_GPU)
+  find_package(CUDAToolkit REQUIRED)
+endif() # TRITON_ENABLE_GPU
 
 # #
 # # libcurl
@@ -163,7 +163,9 @@ ExternalProject_Add(curl
     ${LIBCURL_EXTRA_BUILD_ARGS}
   PATCH_COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/tools/install_src.py --src <SOURCE_DIR> ${INSTALL_SRC_DEST_ARG}
 )
+
 find_package(CURL REQUIRED)
+
 ExternalProject_Add(protobuf
 
   GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
@@ -190,11 +192,13 @@ ExternalProject_Add(protobuf
 # )
 # message(STATUS "Using gRPC ${gRPC_VERSION}")
 include(FetchContent)
-FetchContent_Declare(grpc
+ExternalProject_Add(grpc
   GIT_REPOSITORY "https://github.com/grpc/grpc.git"
   GIT_TAG "v1.48.0"
+  CMAKE_CACHE_ARGS
+  -DCMAKE_INSTALL_PREFIX:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/grpc
 )
-FetchContent_Populate(grpc)
+# FetchContent_Populate(grpc)
 # include_directories($<TARGET_PROPERTY:gRPC::grpc,INTERFACE_INCLUDE_DIRECTORIES>)
 
 
@@ -242,7 +246,8 @@ add_library(shm-utils-library
 include_directories(
   ${client_SOURCE_DIR}/src/c++/library
   ${grpc_SOURCE_DIR}/include
-  ${protobuf_SOURCE_DIR}/third_party/abseil-cpp
+  ${grpc_SOURCE_DIR}/third_party/abseil-cpp
+  # ${protobuf_SOURCE_DIR}/third_party/abseil-cpp
   ${common_SOURCE_DIR}
 )
 
