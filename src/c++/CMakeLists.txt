@@ -198,6 +198,11 @@ ExternalProject_Add(grpc
   CMAKE_CACHE_ARGS
   -DCMAKE_INSTALL_PREFIX:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/grpc
 )
+# FetchContent_Declare(grpc
+#   GIT_REPOSITORY "https://github.com/grpc/grpc.git"
+#   GIT_TAG "v1.48.0"
+# )
+
 # FetchContent_Populate(grpc)
 # include_directories($<TARGET_PROPERTY:gRPC::grpc,INTERFACE_INCLUDE_DIRECTORIES>)
 

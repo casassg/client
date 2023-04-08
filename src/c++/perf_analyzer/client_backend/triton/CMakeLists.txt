@@ -36,6 +36,65 @@ set(
     triton_client_backend.h
 )
 
+# include(FetchContent)
+# FetchContent_Declare(grpc
+#   GIT_REPOSITORY "https://github.com/grpc/grpc.git"
+#   GIT_TAG "v1.48.0"
+# )
+
+# FetchContent_Populate(grpc)
+
+set(TRITON_THIRD_PARTY_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third-party)
+
+include(ExternalProject)
+ExternalProject_Add(grpc
+  GIT_REPOSITORY "https://github.com/grpc/grpc.git"
+  GIT_TAG "v1.48.0"
+  CMAKE_CACHE_ARGS
+  -DCMAKE_INSTALL_PREFIX:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/grpc
+)
+# include_directories(
+#   ${grpc_SOURCE_DIR}/include
+#   ${grpc_SOURCE_DIR}/third_party/abseil-cpp
+# )
+
+include(FetchContent)
+set(TRITON_COMMON_REPO_TAG "main" CACHE STRING "Repos branch")
+FetchContent_Declare(common
+  GIT_REPOSITORY https://github.com/triton-inference-server/common.git
+  GIT_TAG ${TRITON_COMMON_REPO_TAG}
+  GIT_SHALLOW ON 
+)
+FetchContent_Populate(common)
+
+set(TRITON_CLIENT_REPO_TAG "main" CACHE STRING "Repos branch")
+FetchContent_Declare(client
+  GIT_REPOSITORY https://github.com/triton-inference-server/client.git
+  GIT_TAG ${TRITON_CLIENT_REPO_TAG}
+  GIT_SHALLOW ON 
+)
+FetchContent_Populate(client)
+
+find_package(CURL)
+# add_library(
+#   grpcclient_static STATIC
+#   $<TARGET_OBJECTS:grpc-client-library>
+#   $<TARGET_OBJECTS:grpc-service-library>
+#   $<TARGET_OBJECTS:proto-library>
+# )
+
+# add_library(
+#   httpclient_static STATIC
+#   $<TARGET_OBJECTS:http-client-library>
+# )
+include_directories(
+  ${grpc_SOURCE_DIR}/include
+  ${grpc_SOURCE_DIR}/third_party/abseil-cpp
+  # ${protobuf_SOURCE_DIR}/third_party/abseil-cpp
+  ${common_SOURCE_DIR}
+  ${client_SOURCE_DIR}/src/c++/library
+)
+
 add_library(
     triton-client-backend-library  EXCLUDE_FROM_ALL OBJECT
     ${TRITON_CLIENT_BACKEND_SRCS}
