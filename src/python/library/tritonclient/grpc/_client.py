@@ -246,7 +246,7 @@ class InferenceServerClient(InferenceServerClientBase):
         self.stop_stream()
         self._channel.close()
 
-    def is_server_live(self, headers=None, client_timeout=sys.maxsize):
+    def is_server_live(self, headers=None, client_timeout=None):
         """Contact the inference server and get liveness.
 
         Parameters
@@ -286,7 +286,7 @@ class InferenceServerClient(InferenceServerClientBase):
         except grpc.RpcError as rpc_error:
             raise_error_grpc(rpc_error)
 
-    def is_server_ready(self, headers=None, client_timeout=sys.maxsize):
+    def is_server_ready(self, headers=None, client_timeout=None):
         """Contact the inference server and get readiness.
 
         Parameters
@@ -326,7 +326,7 @@ class InferenceServerClient(InferenceServerClientBase):
             raise_error_grpc(rpc_error)
 
     def is_model_ready(
-        self, model_name, model_version="", headers=None, client_timeout=sys.maxsize
+        self, model_name, model_version="", headers=None, client_timeout=None
     ):
         """Contact the inference server and get the readiness of specified model.
 
@@ -377,9 +377,7 @@ class InferenceServerClient(InferenceServerClientBase):
         except grpc.RpcError as rpc_error:
             raise_error_grpc(rpc_error)
 
-    def get_server_metadata(
-        self, headers=None, as_json=False, client_timeout=sys.maxsize
-    ):
+    def get_server_metadata(self, headers=None, as_json=False, client_timeout=None):
         """Contact the inference server and get its metadata.
 
         Parameters
@@ -440,7 +438,7 @@ class InferenceServerClient(InferenceServerClientBase):
         model_version="",
         headers=None,
         as_json=False,
-        client_timeout=sys.maxsize,
+        client_timeout=None,
     ):
         """Contact the inference server and get the metadata for specified model.
 
@@ -511,7 +509,7 @@ class InferenceServerClient(InferenceServerClientBase):
         model_version="",
         headers=None,
         as_json=False,
-        client_timeout=sys.maxsize,
+        client_timeout=None,
     ):
         """Contact the inference server and get the configuration for specified model.
 
@@ -577,7 +575,7 @@ class InferenceServerClient(InferenceServerClientBase):
             raise_error_grpc(rpc_error)
 
     def get_model_repository_index(
-        self, headers=None, as_json=False, client_timeout=sys.maxsize
+        self, headers=None, as_json=False, client_timeout=None
     ):
         """Get the index of model repository contents
 
@@ -638,7 +636,7 @@ class InferenceServerClient(InferenceServerClientBase):
         headers=None,
         config=None,
         files=None,
-        client_timeout=sys.maxsize,
+        client_timeout=None,
     ):
         """Request the inference server to load or reload specified model.
 
@@ -700,7 +698,7 @@ class InferenceServerClient(InferenceServerClientBase):
         model_name,
         headers=None,
         unload_dependents=False,
-        client_timeout=sys.maxsize,
+        client_timeout=None,
     ):
         """Request the inference server to unload specified model.
 
@@ -746,7 +744,7 @@ class InferenceServerClient(InferenceServerClientBase):
         model_version="",
         headers=None,
         as_json=False,
-        client_timeout=sys.maxsize,
+        client_timeout=None,
     ):
         """Get the inference statistics for the specified model name and
         version.
@@ -819,7 +817,7 @@ class InferenceServerClient(InferenceServerClientBase):
         settings={},
         headers=None,
         as_json=False,
-        client_timeout=sys.maxsize,
+        client_timeout=None,
     ):
         """Update the trace settings for the specified model name, or
         global trace settings if model name is not given.
@@ -898,7 +896,7 @@ class InferenceServerClient(InferenceServerClientBase):
             raise_error_grpc(rpc_error)
 
     def get_trace_settings(
-        self, model_name=None, headers=None, as_json=False, client_timeout=sys.maxsize
+        self, model_name=None, headers=None, as_json=False, client_timeout=None
     ):
         """Get the trace settings for the specified model name, or global trace
         settings if model name is not given
@@ -962,7 +960,7 @@ class InferenceServerClient(InferenceServerClientBase):
             raise_error_grpc(rpc_error)
 
     def update_log_settings(
-        self, settings, headers=None, as_json=False, client_timeout=sys.maxsize
+        self, settings, headers=None, as_json=False, client_timeout=None
     ):
         """Update the global log settings.
         Returns the log settings after the update.
@@ -1029,7 +1027,7 @@ class InferenceServerClient(InferenceServerClientBase):
         except grpc.RpcError as rpc_error:
             raise_error_grpc(rpc_error)
 
-    def get_log_settings(self, headers=None, as_json=False, client_timeout=sys.maxsize):
+    def get_log_settings(self, headers=None, as_json=False, client_timeout=None):
         """Get the global log settings.
         Parameters
         ----------
@@ -1081,7 +1079,7 @@ class InferenceServerClient(InferenceServerClientBase):
             raise_error_grpc(rpc_error)
 
     def get_system_shared_memory_status(
-        self, region_name="", headers=None, as_json=False, client_timeout=sys.maxsize
+        self, region_name="", headers=None, as_json=False, client_timeout=None
     ):
         """Request system shared memory status from the server.
 
@@ -1145,7 +1143,7 @@ class InferenceServerClient(InferenceServerClientBase):
             raise_error_grpc(rpc_error)
 
     def register_system_shared_memory(
-        self, name, key, byte_size, offset=0, headers=None, client_timeout=sys.maxsize
+        self, name, key, byte_size, offset=0, headers=None, client_timeout=None
     ):
         """Request the server to register a system shared memory with the
         following specification.
@@ -1199,7 +1197,7 @@ class InferenceServerClient(InferenceServerClientBase):
             raise_error_grpc(rpc_error)
 
     def unregister_system_shared_memory(
-        self, name="", headers=None, client_timeout=sys.maxsize
+        self, name="", headers=None, client_timeout=None
     ):
         """Request the server to unregister a system shared memory with the
         specified name.
@@ -1249,7 +1247,7 @@ class InferenceServerClient(InferenceServerClientBase):
             raise_error_grpc(rpc_error)
 
     def get_cuda_shared_memory_status(
-        self, region_name="", headers=None, as_json=False, client_timeout=sys.maxsize
+        self, region_name="", headers=None, as_json=False, client_timeout=None
     ):
         """Request cuda shared memory status from the server.
 
@@ -1320,7 +1318,7 @@ class InferenceServerClient(InferenceServerClientBase):
         device_id,
         byte_size,
         headers=None,
-        client_timeout=sys.maxsize,
+        client_timeout=None,
     ):
         """Request the server to register a system shared memory with the
         following specification.
@@ -1373,9 +1371,7 @@ class InferenceServerClient(InferenceServerClientBase):
         except grpc.RpcError as rpc_error:
             raise_error_grpc(rpc_error)
 
-    def unregister_cuda_shared_memory(
-        self, name="", headers=None, client_timeout=sys.maxsize
-    ):
+    def unregister_cuda_shared_memory(self, name="", headers=None, client_timeout=None):
         """Request the server to unregister a cuda shared memory with the
         specified name.
 
