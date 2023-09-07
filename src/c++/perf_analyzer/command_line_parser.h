@@ -148,6 +148,14 @@ struct PerfAnalyzerParameters {
 
   // The profile export file path.
   std::string profile_export_file{""};
+
+  // Whether periodic concurrency mode is being used
+  bool using_periodic_concurrency_mode{false};
+
+  uint64_t periodic_concurrency_start{1};
+  uint64_t periodic_concurrency_step{1};
+  uint64_t periodic_concurrency_request_period{10};
+  uint64_t periodic_concurrency_num_steps{1};
 };
 
 using PAParamsPtr = std::shared_ptr<PerfAnalyzerParameters>;

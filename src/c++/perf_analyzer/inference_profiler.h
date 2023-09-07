@@ -43,6 +43,7 @@
 #include "metrics_manager.h"
 #include "model_parser.h"
 #include "mpi_utils.h"
+#include "periodic_concurrency_manager.h"
 #include "profile_data_collector.h"
 #include "request_rate_manager.h"
 
@@ -303,6 +304,12 @@ class InferenceProfiler {
         }
       }
     }
+    return cb::Error::Success;
+  }
+
+  cb::Error ProfilePeriodicConcurrencyMode()
+  {
+    dynamic_cast<PeriodicConcurrencyManager&>(*manager_).BeginConcurrency();
     return cb::Error::Success;
   }
 
